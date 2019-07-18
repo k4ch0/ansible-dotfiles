@@ -6,26 +6,25 @@ driver:
 lint:
   name: yamllint
   options:
-    # config-file: ../../.yamllint
     config-file: molecule/default/yaml-lint.yml
 platforms:
-  - name: instance-ci
-    hostname: instance-ci
-    image: linuxmintd/mint19-amd64
-    # command: "/usb/sbin/init"
-    # privileged: true
+  - name: instance
+    image: "${MOLECULE_DISTRO}"
+    #    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    #volumes:
+    #  - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    #privileged: true
+    #pre_build_image: true
 provisioner:
   name: ansible
-  log: true
+  log: false
   options:
     vvv: true
   config_options:
     defaults:
-      # strategy_plugins: ../../plugins/mitogen/ansible_mitogen/plugins/strategy
-      # strategy: mitogen_linear
       retry_files_enabled: false
-      stdout_callback: default
-      callback_whitelist: profile_tasks, timer
+      stdout_callback: skippy
+      callback_whitelist: profile_tasks
       fact_caching: jsonfile
       fact_caching_connection: /tmp
     ssh_connection:
@@ -37,28 +36,11 @@ provisioner:
     sort_order: ascending
   lint:
     name: ansible-lint
+    #  playbooks:
+    # converge: ${MOLECULE_PLAYBOOK:-playbook.yml}
 scenario:
   name: default
-  test_sequence:
-    - lint
-    - destroy
-    - dependency
-    - syntax
-    - create
-    - prepare
-    - converge
-    - idempotence
-    - side_effect
-    - verify
-    - destroy
 verifier:
   name: testinfra
-  directory: ../../../../tests-molecule/
-  options:
-    # cache-clear: true
-    vvv: false
-    verbose: false
-    verbosity: 7
-    sudo: true
   lint:
     name: flake8

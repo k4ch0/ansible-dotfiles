@@ -5,6 +5,9 @@
     dest: "{{ dotfiles_repo_local_destination }}"
     version: "{{ dotfiles_repo_version }}"
     accept_hostkey: "{{ dotfiles_repo_accept_hostkey }}"
+    depth: 5
+    recursive: true
+    track_submodules: true
   become: false
 
 - name: Ensure all configured dotfiles are links.
